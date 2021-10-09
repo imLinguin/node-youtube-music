@@ -1,4 +1,4 @@
-import got from 'got';
+import axios from 'axios';
 import context from './context';
 import { MusicVideo } from './models';
 import { parseMusicInPlaylistItem } from './parsers';
@@ -40,22 +40,23 @@ export const parseListMusicsFromPlaylistBody = (body: {
 export async function listMusicsFromPlaylist(
   playlistId: string
 ): Promise<MusicVideo[]> {
-  const response = await got.post(
-    'https://music.youtube.com/youtubei/v1/browse?alt=json&key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
-    {
-      json: {
-        ...context.body,
-        browseId: playlistId,
-      },
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-        origin: 'https://music.youtube.com',
-      },
-    }
-  );
+  const {data} = await axios({
+    url:
+      'https://music.youtube.com/youtubei/v1/browse?alt=json&key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
+    responseType: 'json',
+    method: 'POST',
+    data: {
+      ...context.body,
+      browseId: playlistId,
+    },
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+      origin: 'https://music.youtube.com',
+    },
+  });
   try {
-    return parseListMusicsFromPlaylistBody(JSON.parse(response.body));
+    return parseListMusicsFromPlaylistBody(data);
   } catch (e) {
     console.error(e);
     return [];

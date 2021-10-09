@@ -1,4 +1,4 @@
-import got from 'got';
+import axios from 'axios';
 import context from './context';
 import { PlaylistPreview } from './models';
 import { parsePlaylistItem } from './parsers';
@@ -32,24 +32,25 @@ export async function searchPlaylists(
     onlyOfficialPlaylists?: boolean;
   }
 ): Promise<PlaylistPreview[]> {
-  const response = await got.post(
-    'https://music.youtube.com/youtubei/v1/search?alt=json&key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
-    {
-      json: {
-        ...context.body,
-        params: 'EgWKAQIoAWoKEAoQAxAEEAUQCQ%3D%3D',
-        query,
-      },
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-        origin: 'https://music.youtube.com',
-      },
-    }
-  );
+  const {data} = await axios({
+    url:
+      'https://music.youtube.com/youtubei/v1/search?alt=json&key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
+    method: 'POST',
+    responseType: 'json',
+    data: {
+      ...context.body,
+      params: 'EgWKAQIoAWoKEAoQAxAEEAUQCQ%3D%3D',
+      query,
+    },
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+      origin: 'https://music.youtube.com',
+    },
+  });
   try {
     return parseSearchPlaylistsBody(
-      JSON.parse(response.body),
+      data,
       options?.onlyOfficialPlaylists ?? false
     );
   } catch (e) {
