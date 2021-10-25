@@ -51,6 +51,7 @@ export interface Artist {
   name?: string;
   description?: string;
   thumbnails?: any[];
+  featuredSongs?: any[];
   songsPlaylistId?: string;
   albums?: AlbumPreview[];
   singles?: AlbumPreview[];
