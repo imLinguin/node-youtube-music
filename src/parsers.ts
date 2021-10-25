@@ -28,7 +28,7 @@ export const listArtists = (data: any[]): {name:string; id:string}[] => {
   // If you found better way of handling it please help.
   for(let i=0; i<data.length; i+=2) {
     if(!data[i].navigationEndpoint || (data[i].navigationEndpoint && data[i].navigationEndpoint.browseEndpoint.browseEndpointContextSupportedConfigs.browseEndpointContextMusicConfig.pageType !== PageType.album))
-      if(!data[i].text.match(/\d:\d/))
+      if(!data[i].text.match([/\d:\d/, /\d{4}/]))
         artists.push({name:data[i].text, id: data[i]?.navigationEndpoint?.browseEndpoint.browseId})
   }
 
