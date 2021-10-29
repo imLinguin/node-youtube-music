@@ -261,8 +261,11 @@ export const parsePlaylistItem = (
 
   let totalSongs;
   try {
+    const {
+      length,
+    } = content.musicResponsiveListItemRenderer.flexColumns[1].musicResponsiveListItemFlexColumnRenderer.text.runs;
     totalSongs = parseInt(
-      content.musicResponsiveListItemRenderer.flexColumns[1].musicResponsiveListItemFlexColumnRenderer.text.runs[2].text.split(
+      content.musicResponsiveListItemRenderer.flexColumns[1].musicResponsiveListItemFlexColumnRenderer.text.runs[length-1].text.split(
         ' '
       )[0],
       10
