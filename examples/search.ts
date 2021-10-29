@@ -1,5 +1,5 @@
-import { searchMusics } from '../src';
+import { search, SearchType } from '../src';
 
-const main = () => searchMusics('DJOKO');
+const main = () => search('DJOKO', SearchType.music);
 
 main().then((results) => console.log(results));

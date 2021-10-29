@@ -15,6 +15,13 @@ export enum PageType {
   playlist='MUSIC_PAGE_TYPE_PLAYLIST',
 }
 
+export enum SearchType {
+  "album",
+  "artist",
+  "playlist",
+  "music"
+}
+
 export interface MusicVideo {
   youtubeId?: string;
   title?: string;
