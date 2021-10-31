@@ -28,8 +28,19 @@ export const listArtists = (data: any[]): {name:string; id:string}[] => {
   // If you found better way of handling it please help.
   for(let i=0; i<data.length; i+=2) {
     if(!data[i].navigationEndpoint || (data[i].navigationEndpoint && data[i].navigationEndpoint.browseEndpoint.browseEndpointContextSupportedConfigs.browseEndpointContextMusicConfig.pageType !== PageType.album))
-      if(!data[i].text.match(/\d:\d/) && !data[i].text.match(/^\d{4}/))
-        artists.push({name:data[i].text, id: data[i]?.navigationEndpoint?.browseEndpoint.browseId})
+      if (
+        !data[i].text.match(/\d:\d/) &&
+        !data[i].text.match(/^\d{4}/) &&
+        !data[i].text.match('Song') &&
+        !data[i].text.match('Video') &&
+        !data[i].text.match('Playlist') &&
+        !data[i].text.match('views') &&
+        !data[i].text.match('likes')
+      )
+        artists.push({
+          name: data[i].text,
+          id: data[i]?.navigationEndpoint?.browseEndpoint.browseId,
+        });
   }
 
   return artists;
@@ -627,12 +638,13 @@ export const parseMusicInAlbumItem = (content: {
     console.log("Couldn't parse title", err);
   }
 
-  const artists:{name:string;id?:string}[] = [];
+  let artists:{name:string;id?:string}[] = [];
   try {
     if(content.musicResponsiveListItemRenderer.flexColumns[1]?.musicResponsiveListItemFlexColumnRenderer.text.runs)
-    for(let i=0; i<content.musicResponsiveListItemRenderer.flexColumns[1].musicResponsiveListItemFlexColumnRenderer.text.runs.length; i+=2){
-      artists.push({name:content.musicResponsiveListItemRenderer.flexColumns[1].musicResponsiveListItemFlexColumnRenderer.text.runs[i].text})
-    }
+      artists = listArtists(
+        content.musicResponsiveListItemRenderer.flexColumns[1]
+          ?.musicResponsiveListItemFlexColumnRenderer.text.runs
+      );
   } catch (err) {
     console.log("Couldn't parse artists", err);
   }
