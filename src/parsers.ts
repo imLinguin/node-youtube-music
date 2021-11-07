@@ -332,14 +332,15 @@ export const parseMusicInPlaylistItem = (content: {
         };
       };
     }[];
+    playlistItemData: {
+      videoId: string;
+      playlistSetVideoId: string;
+    };
   };
 }): MusicVideo | null => {
   let youtubeId;
   try {
-    youtubeId =
-      content.musicResponsiveListItemRenderer.flexColumns[0]
-        .musicResponsiveListItemFlexColumnRenderer.text.runs[0]
-        .navigationEndpoint.watchEndpoint.videoId;
+    youtubeId = content.musicResponsiveListItemRenderer.playlistItemData.videoId
   } catch (err) {
     console.log("Couldn't parse youtube id", err);
   }
@@ -355,8 +356,10 @@ export const parseMusicInPlaylistItem = (content: {
 
   let artists;
   try {
-    artists = listArtists(content.musicResponsiveListItemRenderer.flexColumns[1]
-      .musicResponsiveListItemFlexColumnRenderer.text.runs);
+    artists = listArtists(
+      content.musicResponsiveListItemRenderer.flexColumns[1]
+        .musicResponsiveListItemFlexColumnRenderer.text.runs
+    );
   } catch (err) {
     console.log("Couldn't parse artist", err);
   }
