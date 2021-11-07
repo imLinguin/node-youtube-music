@@ -1,6 +1,6 @@
-import axios from 'axios';
+import got from 'got';
 import { MusicVideo } from './models';
-import { parseMusicItem } from './parsers';
+import { parseMusicItem, parseAlbumHeader } from './parsers';
 import context from './context';
 
 export const parseSearchMusicsBody = (body: {
@@ -26,24 +26,23 @@ export const parseSearchMusicsBody = (body: {
 };
 
 export async function searchMusics(query: string): Promise<MusicVideo[]> {
-  const {data} = await axios({
-    url:
-      'https://music.youtube.com/youtubei/v1/search?alt=json&key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
-    method:'POST',
-    responseType:'json',
-    data: {
-      ...context.body,
-      params: 'EgWKAQIIAWoKEAoQCRADEAQQBQ%3D%3D',
-      query,
-    },
-    headers: {
-      'User-Agent':
-        'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-      origin: 'https://music.youtube.com',
-    },
-  });
+  const response = await got.post(
+    'https://music.youtube.com/youtubei/v1/search?alt=json&key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
+    {
+      json: {
+        ...context.body,
+        params: 'EgWKAQIIAWoKEAoQCRADEAQQBQ%3D%3D',
+        query,
+      },
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+        origin: 'https://music.youtube.com',
+      },
+    }
+  );
   try {
-    return parseSearchMusicsBody(data);
+    return parseSearchMusicsBody(JSON.parse(response.body));
   } catch {
     return [];
   }

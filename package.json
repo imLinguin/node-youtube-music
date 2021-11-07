@@ -35,6 +35,6 @@
     "test": "yarn build && jest"
   },
   "dependencies": {
-    "axios": "^0.22.0"
+    "got": "^11.8.2"
   }
 }

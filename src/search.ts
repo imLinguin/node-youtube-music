@@ -1,4 +1,4 @@
-import axios from 'axios';
+import got from 'got';
 import {
   parseAlbumItem,
   parseArtistSearchResult,
@@ -13,11 +13,8 @@ import context from './context';
 import { SearchType, PageType } from './models';
 
 export async function handleMultiTypeSearch(query: string) {
-  const response:any = await axios({
-    url: 'https://music.youtube.com/youtubei/v1/search?key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
-    method: 'POST',
-    responseType: 'json',
-    data: {
+  const res:any = await got.post('https://music.youtube.com/youtubei/v1/search?key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',{
+    json: {
       ...context.body,
       query,
     },
@@ -30,9 +27,10 @@ export async function handleMultiTypeSearch(query: string) {
   });
 
   try {
+    const response = JSON.parse(res.body)
     const {
       contents,
-    } = response.data.contents.tabbedSearchResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer;
+    } = response.contents.tabbedSearchResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer;
 
     const array: any[] = [];
     contents.forEach((shelf: any) => {
