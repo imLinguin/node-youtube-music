@@ -13,8 +13,9 @@ import context from './context';
 import { SearchType, PageType } from './models';
 
 export async function handleMultiTypeSearch(query: string) {
-  const response:any = await axios({
-    url: 'https://music.youtube.com/youtubei/v1/search?key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
+  const response: any = await axios({
+    url:
+      'https://music.youtube.com/youtubei/v1/search?key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30',
     method: 'POST',
     responseType: 'json',
     data: {
@@ -33,18 +34,24 @@ export async function handleMultiTypeSearch(query: string) {
     const {
       contents,
     } = response.data.contents.tabbedSearchResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer;
-
     const array: any[] = [];
     contents.forEach((shelf: any) => {
       if (shelf.musicShelfRenderer) {
         shelf.musicShelfRenderer.contents.forEach((element: any) => {
           if (element.musicResponsiveListItemRenderer?.navigationEndpoint) {
             // Album, Artist or Playlist
-            switch (
-              element.musicResponsiveListItemRenderer?.navigationEndpoint
-                .browseEndpoint.browseEndpointContextSupportedConfigs
-                .browseEndpointContextMusicConfig.pageType
-            ) {
+            const navigationEndpoint =
+              element.musicResponsiveListItemRenderer?.navigationEndpoint;
+
+            const pageType = navigationEndpoint.watchEndpoint
+              ? navigationEndpoint.watchEndpoint
+                  .watchEndpointMusicSupportedConfigs.watchEndpointMusicConfig
+                  .musicVideoType
+              : navigationEndpoint.browseEndpoint
+                  .browseEndpointContextSupportedConfigs
+                  .browseEndpointContextMusicConfig.pageType;
+
+            switch (pageType) {
               case PageType.album:
                 array.push(parseAlbumItem(element));
                 break;
@@ -55,6 +62,7 @@ export async function handleMultiTypeSearch(query: string) {
                 array.push(parsePlaylistItem(element, false));
                 break;
               default:
+                array.push(parseMusicItem(element));
                 break;
             }
           } else {
